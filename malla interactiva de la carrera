@@ -1,0 +1,82 @@
+const ramos = {
+  "1": ["Química inorgánica", "Probabilidad y estadística", "Taller de ética", "Calculo diferencial", "Lógica de programación", "Seminario de introducción a la nanotecnología"],
+  "2": ["Química analítica", "Ciencias e ingeniería de los materiales", "mecánica clásica", "Calculo integral", "Fundamentos de química orgánica", "Fundamentos de la investigación"],
+  "3": ["Algebra lineal", "Fundamentos de biología", "Ondas y calor", "Calculo vectorial", "química orgánica II", "Estancias de estudio y desarrollo profesional I"],
+  "4": ["Análisis instrumental", "Biología molecular", "Física del estado sólido", "Ecuaciones diferenciales", "Electromagnetismo", "Taller de investigación I"],
+  "5": ["fisicoquímica", "Nanobiología I", "Nanofísica I", "Análisis numérico", "Nanoquímica I", "Estancias de estudio y desarrollo profesional II"],
+  "6": ["Desarrollo sustentable", "Nanobiología II", "Nanofísica II", "caracterización de los materiales", "Nanoquímica II", "Taller de investigación II"],
+  "7": ["Introducción al modelado por computadora", "Microbiología", "Tópicos de ingeniería y tecnología I", "Tópicos de ingeniería y tecnología II", "Química ambiental", "Estancias de estudio y desarrollo profesional III", "Síntesis de nanomateriales"],
+  "8": ["Tópicos de ingeniería y tecnología III", "Tópicos de ingeniería y tecnología IV", "Tópicos de ingeniería y tecnología V", "Bioprocesos", "Introducción a la anatomía y fisiología humana", "Introducción a la biotecnología", "Introducción a los biomateriales"]
+};
+
+const dependencias = {
+  "Química analítica": ["Química inorgánica"],
+  "Calculo integral": ["Calculo diferencial"],
+  "química orgánica II": ["Fundamentos de química orgánica"],
+  "Calculo vectorial": ["Calculo integral"],
+  "Análisis instrumental": ["Química analítica"],
+  "Biología molecular": ["Fundamentos de biología"],
+  "Ecuaciones diferenciales": ["Calculo vectorial"],
+  "Electromagnetismo": ["Calculo vectorial"],
+  "Taller de investigación I": ["Fundamentos de la investigación"],
+  "Nanobiología I": ["Biología molecular"],
+  "Análisis numérico": ["Análisis instrumental"],
+  "Estancias de estudio y desarrollo profesional II": ["Estancias de estudio y desarrollo profesional I"],
+  "Nanobiología II": ["Nanobiología I"],
+  "Nanofísica II": ["Nanofísica I"],
+  "Nanoquímica II": ["Nanoquímica I"],
+  "Taller de investigación II": ["Taller de investigación I"],
+  "Microbiología": ["Nanobiología II"],
+  "Estancias de estudio y desarrollo profesional III": ["Estancias de estudio y desarrollo profesional II"],
+  "Síntesis de nanomateriales": ["caracterización de los materiales"],
+  "Tópicos de ingeniería y tecnología III": ["Tópicos de ingeniería y tecnología I", "Tópicos de ingeniería y tecnología II"],
+  "Tópicos de ingeniería y tecnología IV": ["Tópicos de ingeniería y tecnología I", "Tópicos de ingeniería y tecnología II"],
+  "Tópicos de ingeniería y tecnología V": ["Tópicos de ingeniería y tecnología I", "Tópicos de ingeniería y tecnología II"]
+};
+
+const estado = {};
+const mallaDiv = document.getElementById("malla");
+
+for (const semestre in ramos) {
+  const semDiv = document.createElement("div");
+  semDiv.className = "semestre";
+  const h2 = document.createElement("h2");
+  h2.textContent = `Semestre ${semestre}`;
+  semDiv.appendChild(h2);
+
+  ramos[semestre].forEach(ramo => {
+    const div = document.createElement("div");
+    div.textContent = ramo;
+    div.className = "ramo";
+    div.id = ramo;
+    estado[ramo] = false;
+
+    if (dependencias[ramo]) {
+      div.classList.add("bloqueado");
+    }
+
+    div.addEventListener("click", () => {
+      if (div.classList.contains("bloqueado")) {
+        alert("Este ramo está bloqueado por prerrequisitos.");
+        return;
+      }
+      if (!estado[ramo]) {
+        div.classList.add("tachado");
+        estado[ramo] = true;
+
+        for (let [sig, requisitos] of Object.entries(dependencias)) {
+          if (!estado[sig]) {
+            const completos = requisitos.every(r => estado[r]);
+            if (completos) {
+              document.getElementById(sig).classList.remove("bloqueado");
+            }
+          }
+        }
+      }
+    });
+
+    semDiv.appendChild(div);
+  });
+
+  mallaDiv.appendChild(semDiv);
+}-
